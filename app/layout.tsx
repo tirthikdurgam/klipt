@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { Work_Sans } from "next/font/google";
 import "./globals.css";
 
-// JetBrains Mono for clip content as specified in the PRD 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
+// Unified brand font - Work Sans
+const workSans = Work_Sans({
   subsets: ["latin"],
+  variable: "--font-work-sans",
+  // Including a full range of weights for maximum design flexibility
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "klipt | Zero-cost Cloud Clipboard", // [cite: 1, 3]
-  description: "A lightweight, globally accessible cloud clipboard for text and code.", // [cite: 10]
+  title: "klipt",
+  description: "A lightweight, globally accessible cloud clipboard for text and code.",
 };
 
 export default function RootLayout({
@@ -21,12 +24,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased scroll-smooth" suppressHydrationWarning>
       <body
-        className={`${jetbrainsMono.variable} min-h-full flex flex-col 
+        className={`${workSans.className} min-h-full flex flex-col 
         bg-[#F2F2F7] dark:bg-black text-black dark:text-white transition-colors duration-500`}
-        style={{
-          // The "San Francisco" system font stack used by Apple
-          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif'
-        }}
       >
         {/* Subtle background glows to create the depth needed for 'liquid glass' components */}
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
