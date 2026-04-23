@@ -78,7 +78,6 @@ export default function ViewClip({ params }: { params: Promise<{ slug: string }>
           </div>
           
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-black uppercase tracking-[0.25em] text-black/30 dark:text-white/30">
-            {/* Added fallbacks for different DB casing conventions */}
             <span>Created: {new Date(clip.createdAt || clip.created_at).toLocaleDateString()}</span>
             <span>Views: {clip.viewCount || clip.views_count || 0}</span>
           </div>
@@ -103,21 +102,21 @@ export default function ViewClip({ params }: { params: Promise<{ slug: string }>
         </div>
       </div>
 
-      {/* The Liquid Glass Code Block */}
-      <div className="flex-1 flex flex-col bg-white/60 dark:bg-[#1c1c1e]/60 backdrop-blur-3xl border border-white/20 dark:border-white/10 rounded-[2.5rem] md:rounded-[3.5rem] shadow-[0_32px_64px_-15px_rgba(0,0,0,0.15)] overflow-hidden ring-1 ring-inset ring-white/20 dark:ring-white/5 transition-all duration-500 relative">
+      {/* THE FIX: Replaced Liquid Glass with the edge-to-edge Navy Blue (#0d1117) */}
+      <div className="flex-1 flex flex-col bg-[#0d1117] rounded-[2.5rem] md:rounded-[3.5rem] shadow-[0_32px_64px_-15px_rgba(0,0,0,0.3)] overflow-hidden ring-1 ring-inset ring-white/10 transition-all duration-500 relative">
         
-        {/* Fake Mac Window Controls */}
-        <div className="px-8 py-5 border-b border-black/5 dark:border-white/5 flex items-center gap-2.5">
-          <div className="w-3 h-3 rounded-full bg-red-500/20 dark:bg-red-500/30" />
-          <div className="w-3 h-3 rounded-full bg-amber-500/20 dark:bg-amber-500/30" />
-          <div className="w-3 h-3 rounded-full bg-emerald-500/20 dark:bg-emerald-500/30" />
+        {/* Window Controls with a subtle background and border to separate from the code area */}
+        <div className="px-8 py-5 border-b border-white/5 flex items-center gap-2.5 bg-white/5">
+          <div className="w-3 h-3 rounded-full bg-red-500/40" />
+          <div className="w-3 h-3 rounded-full bg-amber-500/40" />
+          <div className="w-3 h-3 rounded-full bg-emerald-500/40" />
         </div>
 
         {/* Code Content Area */}
         <div className="flex-1 overflow-auto custom-scrollbar">
           <pre className="m-0 h-full">
-            {/* font-mono completely removed here */}
-            <code className={`language-${clip.language?.toLowerCase() || 'plaintext'} block p-8 md:p-14 text-[15px] md:text-[16px] leading-relaxed outline-none h-full font-medium`}>
+            {/* Added text-slate-300 as a fallback so un-highlighted text is still readable against the dark background */}
+            <code className={`language-${clip.language?.toLowerCase() || 'plaintext'} block p-8 md:p-14 text-[15px] md:text-[16px] leading-relaxed outline-none h-full font-medium text-slate-300`}>
               {clip.content}
             </code>
           </pre>
