@@ -15,7 +15,7 @@ export default function ViewClip({ params }: { params: Promise<{ slug: string }>
     async function fetchClip() {
       try {
         const res = await fetch(`/api/clips/${slug}`, { cache: 'no-store' });
-        if (res.status === 410) {
+        if (res.status === 404 || res.status === 410) {
           setError("This clip has expired or does not exist.");
           return;
         }
@@ -28,11 +28,15 @@ export default function ViewClip({ params }: { params: Promise<{ slug: string }>
     fetchClip();
   }, [slug]);
 
+  // Trigger highlight.js whenever the clip data is loaded
   useEffect(() => {
-    if (clip) hljs.highlightAll();
+    if (clip) {
+      hljs.highlightAll();
+    }
   }, [clip]);
 
   const copyContent = () => {
+    if (!clip) return;
     navigator.clipboard.writeText(clip.content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -40,55 +44,58 @@ export default function ViewClip({ params }: { params: Promise<{ slug: string }>
 
   if (error) {
     return (
-      <main className="flex items-center justify-center min-h-screen">
-        <div className="bg-white/10 backdrop-blur-3xl p-12 rounded-[2.5rem] text-center border border-white/10 shadow-2xl">
-          <h1 className="text-6xl font-bold opacity-10 mb-4 tracking-tighter">410</h1>
-          <p className="text-white/40 mb-10 font-medium">{error}</p>
-          <Link href="/" className="px-10 py-3 bg-blue-600 text-white rounded-2xl font-bold">Back Home</Link>
+      <main className="flex items-center justify-center min-h-[100dvh] p-6">
+        <div className="bg-white/60 dark:bg-[#1c1c1e]/60 backdrop-blur-3xl p-12 rounded-[3rem] text-center border border-white/20 dark:border-white/10 shadow-2xl max-w-md w-full">
+          <h1 className="text-8xl font-black opacity-10 mb-4 tracking-tighter text-black dark:text-white">410</h1>
+          <p className="text-black/50 dark:text-white/40 mb-10 font-bold uppercase tracking-widest text-xs">{error}</p>
+          <Link href="/" className="inline-block px-10 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-600/20 active:scale-95 transition-all">
+            Back Home
+          </Link>
         </div>
       </main>
     );
   }
 
   if (!clip) return (
-    <div className="flex items-center justify-center min-h-screen font-mono text-white/20 animate-pulse uppercase tracking-[0.3em] text-xs">
-      Decrypting Clip Data...
+    <div className="flex items-center justify-center min-h-[100dvh] text-black/20 dark:text-white/20 font-black uppercase tracking-[0.4em] text-[10px] animate-pulse">
+      Decrypting Clip...
     </div>
   );
 
   return (
-    <main className="flex-1 flex flex-col p-6 md:p-12 max-w-6xl mx-auto w-full min-h-screen">
+    <main className="flex-1 flex flex-col p-4 md:p-12 max-w-6xl mx-auto w-full min-h-[100dvh]">
       
       {/* Header & Meta */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 px-2">
         <div>
           <div className="flex items-center gap-3 mb-3">
-             <h1 className="text-4xl font-mono font-bold tracking-tighter lowercase">
-              <span className="text-blue-500">#</span>
-              <span className="text-black dark:text-white ml-1">{clip.slug}</span>
+             <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black dark:text-white">
+              <span className="text-blue-500">#</span>{clip.slug}
             </h1>
-            <span className="px-4 py-1.5 bg-blue-500/10 text-blue-500 rounded-full text-[10px] font-bold uppercase tracking-widest border border-blue-500/20">
+            <span className="px-4 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-500/20 backdrop-blur-md">
               {clip.language || 'Plain Text'}
             </span>
           </div>
           
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-[0.2em] text-black/30 dark:text-white/20 ml-1">
-            <span>Created: {new Date(clip.createdAt).toLocaleDateString()}</span>
-            <span>Views: {clip.viewCount}</span>
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-black uppercase tracking-[0.25em] text-black/30 dark:text-white/30">
+            {/* Added fallbacks for different DB casing conventions */}
+            <span>Created: {new Date(clip.createdAt || clip.created_at).toLocaleDateString()}</span>
+            <span>Views: {clip.viewCount || clip.views_count || 0}</span>
           </div>
         </div>
         
         <div className="flex gap-3">
           <Link 
             href={`/${clip.slug}/raw`}
-            className="px-6 py-3.5 bg-white/60 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl text-[11px] font-bold tracking-widest uppercase hover:bg-white dark:hover:bg-white/10 transition-all ring-1 ring-inset ring-white/20 dark:ring-white/5 shadow-sm"
+            target="_blank"
+            className="flex-1 md:flex-none text-center px-6 py-4 bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl text-[11px] font-bold tracking-widest uppercase hover:bg-white dark:hover:bg-white/10 transition-all ring-1 ring-inset ring-white/20 dark:ring-white/5 shadow-sm text-black dark:text-white"
           >
             Raw View
           </Link>
           <button 
             onClick={copyContent}
-            className={`px-8 py-3.5 rounded-2xl text-[11px] font-bold tracking-widest uppercase transition-all shadow-xl active:scale-95 ${
-              copied ? 'bg-emerald-500 text-white' : 'bg-blue-600 text-white'
+            className={`flex-1 md:flex-none px-8 py-4 rounded-2xl text-[11px] font-bold tracking-widest uppercase transition-all shadow-xl active:scale-95 ${
+              copied ? 'bg-emerald-500 text-white shadow-emerald-500/20' : 'bg-blue-600 text-white shadow-blue-600/20 hover:bg-blue-500'
             }`}
           >
             {copied ? 'Copied!' : 'Copy Content'}
@@ -97,23 +104,30 @@ export default function ViewClip({ params }: { params: Promise<{ slug: string }>
       </div>
 
       {/* The Liquid Glass Code Block */}
-      <div className="flex-1 rounded-[2.5rem] overflow-hidden border border-white/20 dark:border-white/10 shadow-[0_32px_64px_-15px_rgba(0,0,0,0.3)] bg-[#0d1117] relative ring-1 ring-inset ring-white/10">
-        {/* Traffic Lights */}
-        <div className="absolute top-0 left-0 right-0 h-12 bg-white/5 border-b border-white/5 flex items-center px-8 gap-2 z-10 backdrop-blur-md">
-           <div className="w-3 h-3 rounded-full bg-red-500/40" />
-           <div className="w-3 h-3 rounded-full bg-amber-500/40" />
-           <div className="w-3 h-3 rounded-full bg-emerald-500/40" />
-        </div>
+      <div className="flex-1 flex flex-col bg-white/60 dark:bg-[#1c1c1e]/60 backdrop-blur-3xl border border-white/20 dark:border-white/10 rounded-[2.5rem] md:rounded-[3.5rem] shadow-[0_32px_64px_-15px_rgba(0,0,0,0.15)] overflow-hidden ring-1 ring-inset ring-white/20 dark:ring-white/5 transition-all duration-500 relative">
         
-        <pre className="h-full pt-12 overflow-auto">
-          <code className={`language-${clip.language || 'plaintext'} block p-10 font-mono text-[16px] leading-relaxed outline-none h-full`}>
-            {clip.content}
-          </code>
-        </pre>
+        {/* Fake Mac Window Controls */}
+        <div className="px-8 py-5 border-b border-black/5 dark:border-white/5 flex items-center gap-2.5">
+          <div className="w-3 h-3 rounded-full bg-red-500/20 dark:bg-red-500/30" />
+          <div className="w-3 h-3 rounded-full bg-amber-500/20 dark:bg-amber-500/30" />
+          <div className="w-3 h-3 rounded-full bg-emerald-500/20 dark:bg-emerald-500/30" />
+        </div>
+
+        {/* Code Content Area */}
+        <div className="flex-1 overflow-auto custom-scrollbar">
+          <pre className="m-0 h-full">
+            {/* font-mono completely removed here */}
+            <code className={`language-${clip.language?.toLowerCase() || 'plaintext'} block p-8 md:p-14 text-[15px] md:text-[16px] leading-relaxed outline-none h-full font-medium`}>
+              {clip.content}
+            </code>
+          </pre>
+        </div>
       </div>
       
-      <footer className="mt-12 text-center opacity-20">
-        <Link href="/" className="font-mono text-xl font-bold tracking-tighter lowercase">klipt_</Link>
+      <footer className="mt-12 text-center opacity-30 pb-6">
+        <Link href="/" className="text-xl font-black tracking-tighter text-black dark:text-white transition-all hover:text-blue-500">
+          klipt<span className="text-blue-500">.</span>
+        </Link>
       </footer>
     </main>
   );

@@ -14,7 +14,6 @@ export const metadata: Metadata = {
   title: "klipt",
   description: "A lightweight, globally accessible cloud clipboard for text and code.",
   
-  // This replaces your <link> tags
   icons: {
     icon: [
       { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
@@ -26,7 +25,6 @@ export const metadata: Metadata = {
     ],
   },
   
-  // This replaces your <meta> and manifest tags
   manifest: "/site.webmanifest",
   appleWebApp: {
     title: "klipt",
@@ -41,13 +39,13 @@ export default function RootLayout({
   return (
     <html 
       lang="en" 
-      className="h-full antialiased scroll-smooth" 
+      // Inject the variable here so globals.css can read var(--font-work-sans)
+      className={`${workSans.variable} h-full antialiased scroll-smooth`} 
       data-scroll-behavior="smooth" 
       suppressHydrationWarning
     >
       <body
-        className={`${workSans.className} min-h-full flex flex-col 
-        bg-[#F2F2F7] dark:bg-black text-black dark:text-white transition-colors duration-500`}
+        className="min-h-full flex flex-col bg-[#F2F2F7] dark:bg-black text-black dark:text-white transition-colors duration-500"
       >
         {/* Subtle background glows to create the depth needed for 'liquid glass' components */}
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
