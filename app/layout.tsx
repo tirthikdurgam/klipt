@@ -22,7 +22,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased scroll-smooth" suppressHydrationWarning>
+    <html 
+      lang="en" 
+      className="h-full antialiased scroll-smooth" 
+      data-scroll-behavior="smooth" // This fixes the Next.js warning
+      suppressHydrationWarning
+    >
       <body
         className={`${workSans.className} min-h-full flex flex-col 
         bg-[#F2F2F7] dark:bg-black text-black dark:text-white transition-colors duration-500`}
