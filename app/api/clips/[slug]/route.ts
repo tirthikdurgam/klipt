@@ -71,3 +71,61 @@ export async function GET(
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+/**
+ * Delete Clip
+ * Requires a valid deleteToken to match the DB row to prevent unauthorized deletion.
+ */
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const { slug } = await params;
+
+    // Parse the token from the frontend request
+    const body = await request.json();
+    const { deleteToken } = body;
+
+    if (!deleteToken) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Missing delete token.' }, 
+        { status: 401 }
+      );
+    }
+
+    // Attempt deletion ONLY if both the slug and the token match.
+    // Adding .select() forces Supabase to return the deleted row(s) if successful.
+    const { data, error } = await supabase
+      .from('clips')
+      .delete()
+      .eq('slug', slug)
+      .eq('delete_token', deleteToken)
+      .select();
+
+    if (error) {
+      console.error('Supabase delete error:', error);
+      return NextResponse.json({ error: 'Database error while deleting.' }, { status: 500 });
+    }
+
+    // If data is empty, it means the row wasn't found OR the token was incorrect.
+    if (!data || data.length === 0) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Invalid delete token or clip does not exist.' }, 
+        { status: 403 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: 'Clip deleted successfully' },
+      { status: 200 }
+    );
+    
+  } catch (error) {
+    console.error('Unexpected delete error:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete clip' },
+      { status: 500 }
+    );
+  }
+}

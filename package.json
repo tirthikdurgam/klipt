@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
     "highlight.js": "^11.11.1",
     "nanoid": "^5.1.9",
     "next": "16.2.4",

@@ -69,6 +69,14 @@ export default function Home() {
 
       if (response.ok) {
         const data = await response.json();
+        
+        // --- NEW: THE COAT CHECK TICKET ---
+        // Save the delete token to localStorage so this specific browser 
+        // is remembered as the creator of this clip.
+        if (data.deleteToken) {
+          localStorage.setItem(`klipt_token_${data.slug}`, data.deleteToken);
+        }
+
         router.push(`/success?slug=${data.slug}`); 
       } else {
         const errorData = await response.json();
@@ -82,7 +90,6 @@ export default function Home() {
   };
 
   return (
-    // Reduced padding on mobile (p-4) to maximize screen space
     <main className="flex-1 flex flex-col p-4 md:p-12 max-w-6xl mx-auto w-full min-h-[100dvh]">
       
       <header className="flex items-center justify-between mb-6 md:mb-10">
@@ -94,10 +101,9 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Glass Editor - rounded corners slightly smaller on mobile for better edge fit */}
+      {/* Main Glass Editor */}
       <div className="flex-1 flex flex-col bg-white/60 dark:bg-[#1c1c1e]/60 backdrop-blur-3xl border border-white/20 dark:border-white/10 rounded-[1.5rem] md:rounded-[2.5rem] shadow-[0_32px_64px_-15px_rgba(0,0,0,0.15)] overflow-hidden ring-1 ring-inset ring-white/20 dark:ring-white/5 transition-all duration-500">
         
-        {/* Fixed: text-[16px] is critical to prevent iOS auto-zoom on focus */}
         <textarea
           autoFocus
           placeholder="Paste your text or code here..."
@@ -106,7 +112,7 @@ export default function Home() {
           onChange={(e) => setContent(e.target.value)}
         />
 
-        {/* Controls Bar - Spacing adjusted for thumb taps */}
+        {/* Controls Bar */}
         <div className="p-4 md:p-8 bg-white/30 dark:bg-black/20 backdrop-blur-md border-t border-white/20 dark:border-white/10 flex flex-col gap-4 items-center">
           
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
@@ -115,7 +121,6 @@ export default function Home() {
               <input
                 type="text"
                 placeholder="Custom URL (optional)"
-                // text-base (16px) ensures no auto-zoom on mobile
                 className="w-full bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl md:rounded-2xl px-5 py-4 md:py-3.5 text-base md:text-sm outline-none focus:ring-2 ring-blue-500/30 transition-all placeholder:text-slate-400"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))}
@@ -159,7 +164,6 @@ export default function Home() {
           <button
             onClick={handleSave}
             disabled={!content.trim() || isSaving || (slug.length >= 3 && isAvailable === false)}
-            // Full width on mobile (w-full), auto on desktop
             className="w-full md:w-auto px-12 py-4 md:py-4 bg-blue-600 dark:bg-blue-500 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-30 disabled:hover:scale-100 text-white font-semibold rounded-xl md:rounded-[1.5rem] transition-all shadow-xl shadow-blue-500/25 text-base md:text-sm"
           >
             {isSaving ? 'Saving...' : 'Save Clip'}
