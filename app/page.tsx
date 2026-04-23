@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Expiry options
 const EXPIRY_OPTIONS = [
   { label: '1 hour', value: 3600 },
   { label: '6 hours', value: 21600 },
@@ -15,7 +14,6 @@ const EXPIRY_OPTIONS = [
   { label: '30 days', value: 2592000 },
 ];
 
-// Updated to Title Case for better UI legibility
 const LANGUAGES = [
   'Plain Text', 'JavaScript', 'TypeScript', 'Python', 'Bash', 'SQL', 'JSON', 'HTML', 'CSS'
 ];
@@ -25,7 +23,7 @@ export default function Home() {
   const [content, setContent] = useState('');
   const [slug, setSlug] = useState('');
   const [language, setLanguage] = useState('Plain Text');
-  const [expiry, setExpiry] = useState(86400); // Default: 1 day
+  const [expiry, setExpiry] = useState(86400); 
   
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -64,7 +62,7 @@ export default function Home() {
         body: JSON.stringify({ 
           content, 
           slug: slug || undefined, 
-          language: language.toLowerCase(), // Send lowercase to DB for consistency
+          language: language.toLowerCase(), 
           expirySeconds: expiry 
         }),
       });
@@ -84,41 +82,41 @@ export default function Home() {
   };
 
   return (
-    <main className="flex-1 flex flex-col p-6 md:p-12 max-w-6xl mx-auto w-full">
+    // Reduced padding on mobile (p-4) to maximize screen space
+    <main className="flex-1 flex flex-col p-4 md:p-12 max-w-6xl mx-auto w-full min-h-[100dvh]">
       
-      {/* Header - Now using Work Sans (Inherited) */}
-      <header className="flex items-center justify-between mb-10">
+      <header className="flex items-center justify-between mb-6 md:mb-10">
         <div className="group cursor-default">
-          <h1 className="text-4xl font-black tracking-tighter transition-all duration-300">
+          <h1 className="text-3xl md:text-4xl font-black tracking-tighter transition-all duration-300">
             <span className="text-black dark:text-white">klipt</span>
             <span className="text-blue-500 animate-pulse">.</span>
           </h1>
         </div>
       </header>
 
-      {/* Main Glass Editor */}
-      <div className="flex-1 flex flex-col bg-white/60 dark:bg-[#1c1c1e]/60 backdrop-blur-3xl border border-white/20 dark:border-white/10 rounded-[2.5rem] shadow-[0_32px_64px_-15px_rgba(0,0,0,0.15)] overflow-hidden ring-1 ring-inset ring-white/20 dark:ring-white/5 transition-all duration-500">
+      {/* Main Glass Editor - rounded corners slightly smaller on mobile for better edge fit */}
+      <div className="flex-1 flex flex-col bg-white/60 dark:bg-[#1c1c1e]/60 backdrop-blur-3xl border border-white/20 dark:border-white/10 rounded-[1.5rem] md:rounded-[2.5rem] shadow-[0_32px_64px_-15px_rgba(0,0,0,0.15)] overflow-hidden ring-1 ring-inset ring-white/20 dark:ring-white/5 transition-all duration-500">
         
-        {/* Content area - font-mono removed to follow Work Sans rule */}
+        {/* Fixed: text-[16px] is critical to prevent iOS auto-zoom on focus */}
         <textarea
           autoFocus
           placeholder="Paste your text or code here..."
-          className="flex-1 p-8 md:p-10 bg-transparent text-[16px] leading-relaxed resize-none outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400/40"
+          className="flex-1 p-6 md:p-10 bg-transparent text-[16px] leading-relaxed resize-none outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400/40 min-h-[300px]"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
 
-        {/* Controls Bar */}
-        <div className="p-6 md:p-8 bg-white/30 dark:bg-black/20 backdrop-blur-md border-t border-white/20 dark:border-white/10 flex flex-col md:flex-row gap-4 items-center">
+        {/* Controls Bar - Spacing adjusted for thumb taps */}
+        <div className="p-4 md:p-8 bg-white/30 dark:bg-black/20 backdrop-blur-md border-t border-white/20 dark:border-white/10 flex flex-col gap-4 items-center">
           
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
             
-            {/* Slug Input */}
             <div className="relative">
               <input
                 type="text"
                 placeholder="Custom URL (optional)"
-                className="w-full bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl px-5 py-3.5 text-sm outline-none focus:ring-2 ring-blue-500/30 transition-all placeholder:text-slate-400"
+                // text-base (16px) ensures no auto-zoom on mobile
+                className="w-full bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl md:rounded-2xl px-5 py-4 md:py-3.5 text-base md:text-sm outline-none focus:ring-2 ring-blue-500/30 transition-all placeholder:text-slate-400"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))}
               />
@@ -133,52 +131,49 @@ export default function Home() {
               )}
             </div>
 
-            {/* Language Selection - All Caps logic removed */}
             <select
-              className="bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl px-5 py-3.5 text-sm outline-none cursor-pointer hover:bg-white/80 dark:hover:bg-white/10 transition-colors appearance-none"
+              className="w-full bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl md:rounded-2xl px-5 py-4 md:py-3.5 text-base md:text-sm outline-none cursor-pointer hover:bg-white/80 dark:hover:bg-white/10 transition-colors appearance-none"
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
             >
               {LANGUAGES.map(lang => (
-                <option key={lang} value={lang} className="dark:bg-[#1c1c1e] font-sans">
+                <option key={lang} value={lang} className="dark:bg-[#1c1c1e] text-black dark:text-white">
                   {lang}
                 </option>
               ))}
             </select>
 
-            {/* Expiry Selection */}
             <select
-              className="bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl px-5 py-3.5 text-sm outline-none cursor-pointer hover:bg-white/80 dark:hover:bg-white/10 transition-colors appearance-none"
+              className="w-full bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl md:rounded-2xl px-5 py-4 md:py-3.5 text-base md:text-sm outline-none cursor-pointer hover:bg-white/80 dark:hover:bg-white/10 transition-colors appearance-none"
               value={expiry}
               onChange={(e) => setExpiry(Number(e.target.value))}
             >
               {EXPIRY_OPTIONS.map(opt => (
-                <option key={opt.value} value={opt.value} className="dark:bg-[#1c1c1e]">
+                <option key={opt.value} value={opt.value} className="dark:bg-[#1c1c1e] text-black dark:text-white">
                   {opt.label}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Action Button */}
           <button
             onClick={handleSave}
             disabled={!content.trim() || isSaving || (slug.length >= 3 && isAvailable === false)}
-            className="w-full md:w-auto px-12 py-4 bg-blue-600 dark:bg-blue-500 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-30 disabled:hover:scale-100 text-white font-semibold rounded-[1.5rem] transition-all shadow-xl shadow-blue-500/25 text-sm"
+            // Full width on mobile (w-full), auto on desktop
+            className="w-full md:w-auto px-12 py-4 md:py-4 bg-blue-600 dark:bg-blue-500 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-30 disabled:hover:scale-100 text-white font-semibold rounded-xl md:rounded-[1.5rem] transition-all shadow-xl shadow-blue-500/25 text-base md:text-sm"
           >
             {isSaving ? 'Saving...' : 'Save Clip'}
           </button>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-10 flex flex-col sm:flex-row justify-between items-center px-4 gap-4">
-        <p className="text-[11px] font-semibold tracking-widest text-black/30 dark:text-white/20 uppercase">
+      <footer className="mt-8 md:mt-10 flex flex-col sm:flex-row justify-between items-center px-2 gap-4 pb-4">
+        <p className="text-[10px] font-semibold tracking-widest text-black/30 dark:text-white/20 uppercase">
           Secure & Instant
         </p>
         <a 
           href="https://github.com/tirthikdurgam/klipt" 
-          className="text-[11px] font-semibold text-black/30 dark:text-white/20 hover:text-blue-500 dark:hover:text-blue-400 transition-colors underline underline-offset-4 uppercase tracking-widest"
+          className="text-[10px] font-semibold text-black/30 dark:text-white/20 hover:text-blue-500 dark:hover:text-blue-400 transition-colors underline underline-offset-4 uppercase tracking-widest"
         >
           View Source
         </a>

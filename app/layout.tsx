@@ -6,7 +6,6 @@ import "./globals.css";
 const workSans = Work_Sans({
   subsets: ["latin"],
   variable: "--font-work-sans",
-  // Including a full range of weights for maximum design flexibility
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
@@ -14,6 +13,24 @@ const workSans = Work_Sans({
 export const metadata: Metadata = {
   title: "klipt",
   description: "A lightweight, globally accessible cloud clipboard for text and code.",
+  
+  // This replaces your <link> tags
+  icons: {
+    icon: [
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  
+  // This replaces your <meta> and manifest tags
+  manifest: "/site.webmanifest",
+  appleWebApp: {
+    title: "klipt",
+  },
 };
 
 export default function RootLayout({
@@ -25,7 +42,7 @@ export default function RootLayout({
     <html 
       lang="en" 
       className="h-full antialiased scroll-smooth" 
-      data-scroll-behavior="smooth" // This fixes the Next.js warning
+      data-scroll-behavior="smooth" 
       suppressHydrationWarning
     >
       <body
